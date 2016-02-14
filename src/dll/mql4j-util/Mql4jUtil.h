@@ -18,11 +18,17 @@
  *	limitations under the License.
  */
 
+
+/**
+ * Modification Notice From: Jason Separovic
+ * Description: Removed all references to activeMQ as it's not required in MQL4Java project
+ * For a detailed descirption of changes please view Pull Request: 
+*/
+
 #pragma once
 #ifdef _DEBUG
 	#define CRTDBG_MAP_ALLOC
 #endif
-#include "..\mql4j-activemq\Mql4jActivemq.h"
 #include "..\mql4j-common\Mql4jLog.h"
 #include "..\mql4j-common\Mql4jString.h"
 #include "..\mql4j-java\Mql4jJava.h"
@@ -36,31 +42,4 @@ namespace mql4j {
 	 * Start jvm
 	 */
 	void jvmStart();
-
-	/**
-	 * activemqSend
-	 *
-	 * Send a message to a running activemq topic / queue
-	 *
-	 * @param  brokerURI ActiveMQ URI to connect to broker. For details
-	 *                   visit http://activemq.apache.org/broker-uri.html
-	 * @param  useTopic  false for queue
-	 *                   true  for topic
-	 * @param  dest      Name of queue or topic
-	 * @param  message   string
-	 */
-	void activemqSend(const string brokerURI, const bool useTopic, const string dest, const string message);
-
-	/**
-	 * activemqRecv
-	 *
-	 * Retrieve and display a message from a running activemq topic / queue
-	 *
-	 * @param  brokerURI ActiveMQ URI to connect to broker. For details
-	 *                   visit http://activemq.apache.org/broker-uri.html
-	 * @param  useTopic  false for queue
-	 *                   true  for topic
-	 * @param  dest      Name of queue or topic
-	 */
-	void activemqRecv(const string brokerURI, const bool useTopic, const string dest);
 }

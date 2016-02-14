@@ -45,6 +45,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
     <ExecutablePath>$(TargetDir)..\..\apr\Release\libapr-1.dll;$(ExecutablePath)</ExecutablePath>
+    <IncludePath>C:\Program Files (x86)\Java\jdk1.8.0_66\include;C:\Program Files (x86)\Java\jdk1.8.0_66\include\win32;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
@@ -116,9 +117,6 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\mql4j-activemq\mql4j-activemq.vcxproj">
-      <Project>{34615c93-bf3f-4c28-96ad-12995579b26e}</Project>
-    </ProjectReference>
     <ProjectReference Include="..\mql4j-common\mql4j-common.vcxproj">
       <Project>{da7453a3-7ea0-4724-a21a-315c289aa76a}</Project>
     </ProjectReference>
