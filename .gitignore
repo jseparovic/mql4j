@@ -17,6 +17,9 @@
 # virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
 hs_err_pid*
 
+src/dll/Debug/
+src/dll/.vs/
+src/dll/ipch/
 src/dll/mql4j-java/Debug/
 src/dll/mql4j-common/Debug/
 src/dll/mql4j-util/Debug/
