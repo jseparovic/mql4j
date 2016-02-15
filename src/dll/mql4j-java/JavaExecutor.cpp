@@ -1,6 +1,7 @@
 /* JavaExecutor.cpp */
 #include "stdafx.h"
 #include "JavaExecutor.h"
+#include "boost/format.hpp"
 
 bool mql4j::java::JavaExecutor::callMain(JNIEnv * env, string className, jobjectArray args) {
 	if(env == NULL) {
@@ -75,4 +76,26 @@ string mql4j::java::JavaExecutor::call(JNIEnv * env, string className, string me
 	env->ReleaseStringUTFChars(resultObj, resultStr);
 	env->DeleteLocalRef(resultObj);
 	return str;
+}
+
+
+jclass mql4j::java::JavaExecutor::getJClass(JNIEnv * env, const char* classNameStr) {
+	jclass classHandle = env->FindClass(classNameStr);
+	if (classHandle == NULL)
+	{
+		log::error(__FILE__, __LINE__, str(boost::format("could not find class :  %1%") % classNameStr));
+		return NULL;
+	}
+	return classHandle;
+}
+
+
+jmethodID mql4j::java::JavaExecutor::getJMethodID(JNIEnv * env, jclass classHandle, const char*  methodName, const char*  signature) {
+	jmethodID methodID = env->GetStaticMethodID(classHandle, methodName, signature);
+	if (methodID == NULL)
+	{
+		log::error(__FILE__, __LINE__, str(boost::format("could not find method :  %1% %2%") % methodName % signature));
+		return NULL;
+	}
+	return methodID;
 }

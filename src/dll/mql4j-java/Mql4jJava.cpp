@@ -1,16 +1,13 @@
 /* Mql4jJava.cpp */
 #include "stdafx.h"
 #include "Mql4jJava.h"
+#include "boost/format.hpp"
 
 MQL4J_API bool mql4j::java::javaStart() {
 	if(!java::JavaJvm::instance()->start()) {
 		return false;
 	}
 	JNIEnv * env = JavaJvm::instance()->getEnv();
-	jobjectArray arg = env->NewObjectArray(1, env->FindClass("java/lang/String"), env->NewStringUTF("start"));
-	if(!JavaExecutor::callMain(env, MQL4J_JAVA_LAUNCHER_CLASS, arg)) {
-		return false;
-	}
 	return true;
 }
 
@@ -23,16 +20,34 @@ MQL4J_API bool mql4j::java::javaStatus() {
 	return JavaJvm::instance()->isRunning();
 }
 
-MQL4J_API wchar_t * mql4j::java::javaCall(wchar_t * className, wchar_t * methodName, wchar_t * arg) {
+
+#define EXEC_ON_INIT_CLASS "com/jseppa/mql4java/base/mql/MQLExpert"
+#define EXEC_ON_INIT_METHOD "execOnInit"
+#define EXEC_ON_INIT_SIGNATURE "(JLjava/lang/String;)V"
+
+
+MQL4J_API void mql4j::java::execOnInit(int64_t chartID, wchar_t *strategyClassName) {
+	log::debug(__FILE__, __LINE__, str(boost::format("calling %1%") % EXEC_ON_INIT_METHOD));
+	const char* className = EXEC_ON_INIT_CLASS;
+	const char* methodName = EXEC_ON_INIT_METHOD;
+	const char* signature = EXEC_ON_INIT_SIGNATURE;
+
+	string stratClass = toString(strategyClassName);
+
 	JNIEnv * env = JavaJvm::instance()->getEnv();
-	string classNameStr = toString(className);
-	string methodNameStr = toString(methodName);
-	string argStr = toString(arg);
-	string result = JavaExecutor::call(JavaJvm::instance()->getEnv(), classNameStr, methodNameStr, argStr);
-	log::debug(__FILE__, __LINE__, "Call " + classNameStr + " " + methodNameStr + "(" + argStr + ") return " + result);
-	return toWArray(result);
+	jclass classHandle = JavaExecutor::getJClass(env, className);
+	if (classHandle == NULL) return;
+
+	jmethodID methodID = JavaExecutor::getJMethodID(env, classHandle, methodName, signature);
+	if (classHandle == NULL) return;
+
+	env->CallStaticVoidMethod(classHandle, methodID, chartID, env->NewStringUTF(stratClass.c_str()));
+	log::debug(__FILE__, __LINE__, str(boost::format("Call %1% %2%(%3%,%4%)")
+											% className % methodName % chartID % stratClass));
 }
+
 
 BOOL APIENTRY DllMain(HMODULE hModule, DWORD ul_reason_for_call, LPVOID lpReserved) {
 	return true;
 }
+ 

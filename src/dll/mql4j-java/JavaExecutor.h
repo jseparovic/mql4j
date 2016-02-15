@@ -59,6 +59,11 @@ namespace mql4j {
 			 *		static String methodName(String arg)
 			 */
 			static string call(JNIEnv * env, string className, string methodName, string arg);
+
+			static jclass getJClass(JNIEnv * env, const char* classNameStr);
+
+			static jmethodID getJMethodID(JNIEnv * env, jclass classHandle, const char*  methodName, const char*  signature);
+
 		};
 	}
 }

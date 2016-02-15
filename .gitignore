@@ -26,4 +26,4 @@ src/dll/mql4j-util/Debug/
 src/dll/mql4j-java/mql4j-java.vcxproj.user
 src/dll/mql4j-common/mql4j-common.vcxproj.user
 src/dll/mql4j-util/mql4j-util.vcxproj.user
-
+src/dll/packages

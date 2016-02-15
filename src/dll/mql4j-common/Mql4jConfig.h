@@ -26,13 +26,13 @@
 /**
  * Configuration defaults
  */
-#define MQL4J_CONFIG_LINE_MAX							512
+#define MQL4J_CONFIG_LINE_MAX							2048
 #define MQL4J_CONFIG_FILE								"mql4j.ini"
 #define MQL4J_CONFIG_APPNAME							"mql4j"
-#define MQL4J_CONFIG_DEFAULT_HOME_DIR					"C:\\Program Files (x86)\\MetaTrader 4\\MQL4\\Libraries"
-#define MQL4J_CONFIG_DEFAULT_JAVA_CLASSLOADER_VERBOSE	false
-#define MQL4J_CONFIG_DEFAULT_JAVA_JNI_VERBOSE			false
-#define MQL4J_CONFIG_DEFAULT_JAVA_MAX_MEM				"512m"
+#define MQL4J_CONFIG_DEFAULT_HOME_DIR					"C:\\trading\\jtrader\\"
+#define MQL4J_CONFIG_DEFAULT_JAVA_CLASSLOADER_VERBOSE	true
+#define MQL4J_CONFIG_DEFAULT_JAVA_JNI_VERBOSE			true
+#define MQL4J_CONFIG_DEFAULT_JAVA_MAX_MEM				"1024m"
 #define MQL4J_CONFIG_DEFAULT_LOGFILE					"mql4j.log"
 #define MQL4J_CONFIG_DEFAULT_LOGLEVEL					"DEBUG"
 

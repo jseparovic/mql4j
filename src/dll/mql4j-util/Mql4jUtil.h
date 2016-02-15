@@ -22,7 +22,7 @@
 /**
  * Modification Notice From: Jason Separovic
  * Description: Removed all references to activeMQ as it's not required in MQL4Java project
- * For a detailed descirption of changes please view Pull Request: 
+ * For a detailed descirption of changes please view Pull Request: https://github.com/jseparovic/mql4j/pull/1/files
 */
 
 #pragma once

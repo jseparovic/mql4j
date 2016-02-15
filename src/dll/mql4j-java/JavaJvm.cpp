@@ -44,8 +44,11 @@ bool mql4j::java::JavaJvm::start() {
 		return false;
 	}
 	options = new JavaVMOption[JVM_OPTS_MAX];
-	addOption("-Djava.class.path=" + getClassPath());
-	addOption("-Dlogback.configurationFile=" + config::getHomeDir() + "\\logback.xml");
+	addOption("-Djava.class.path=C:\\trading\\jtrader\\libs\\mql4java-all-1.0-SNAPSHOT.jar");
+	addOption("-Dlogback.configurationFile=C:\\trading\\jtrader\\etc\\logback.xml");
+
+//	addOption("-Djava.class.path=" + getClassPath());
+//	addOption("-Dlogback.configurationFile=" + config::getHomeDir() + "\\logback.xml");
 	addOption("-Xmx" + config::getJavaMaxMem());
 	if(config::isJavaClassloaderVerbose()) {
 		addOption("-verbose:class");

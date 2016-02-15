@@ -18,6 +18,12 @@
  *	limitations under the License.
  */
 
+ /**
+ * Modification Notice From: Jason Separovic
+ * For a detailed descirption of changes please view Pull Request: https://github.com/jseparovic/mql4j/pull/1/files
+ */
+
+
 #pragma once
 #ifdef MQL4J_EXPORTS
 	#define MQL4J_API __declspec(dllexport)
@@ -30,7 +36,9 @@
 #include "..\mql4j-common\Mql4jLog.h"
 #include "..\mql4j-common\Mql4jString.h"
 
-#define MQL4J_JAVA_LAUNCHER_CLASS "com.mql4j.core.Mql4jService"
+#define EXEC_ON_INIT_CLASS "com/jseppa/mql4java/base/mql/MQLExpert"
+#define EXEC_ON_INIT_METHOD "execOnInit"
+#define EXEC_ON_INIT_SIGNATURE "(JLjava/lang/String;)V"
 
 using namespace std;
 
@@ -71,5 +79,14 @@ namespace mql4j {
 		 * com.java.lang.String
 		 */
 		MQL4J_API wchar_t * javaCall(wchar_t * className, wchar_t * methodName, wchar_t * arg);
+
+
+		/**
+		* execOnInit
+		*
+		* Executed from MQL when the OnInit function is called
+		*/
+		MQL4J_API void execOnInit(int64_t chartID, wchar_t *strategyClassName);
+
 	}
 }

@@ -1,6 +1,6 @@
-LIBRARY "mql4j-java"
+boost::format("writing %1%,  x=%2% : %3%-th try") % "toto" % 40.23 % 50; LIBRARY "mql4j-java"
 EXPORTS
 	javaStart
 	javaStop
 	javaStatus
-	javaCall
+	execOnInit

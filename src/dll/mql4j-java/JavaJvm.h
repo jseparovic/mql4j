@@ -27,9 +27,9 @@
 
 #define JVM_OPTS_MAX 50
 #define JVM_OPT_LEN_MAX 1024
-#define JVM_VERBOSE_CLASSLOADER false
-#define JVM_VERBOSE_JNI false
-#define JVM_JAVA_VERSION_REQ JNI_VERSION_1_6
+#define JVM_VERBOSE_CLASSLOADER true
+#define JVM_VERBOSE_JNI true
+#define JVM_JAVA_VERSION_REQ JNI_VERSION_1_8
 
 namespace mql4j {
 	namespace java {
