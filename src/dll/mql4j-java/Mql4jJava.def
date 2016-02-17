@@ -4,3 +4,27 @@ EXPORTS
 	javaStop
 	javaStatus
 	execOnInit
+	initRates
+	setRatesSize
+	execOnDeinit
+	execOnTick
+	execOnTimer
+	isExecutingOnInit
+	isExecutingOnTick
+	isExecutingOnTimer
+	isExecutingOnDeinit
+	isCommandManagerReady
+	isCommandWaiting
+	getCommandId
+	getCommandName
+	getCommandParams
+	setBoolCommandResponse
+	setDoubleCommandResponse
+	setIntCommandResponse
+	setStringCommandResponse
+	setVoidCommandResponse
+	setLongCommandResponse
+	setDateTimeCommandResponse
+	setEnumCommandResponse
+	commandLock
+	commandUnlock

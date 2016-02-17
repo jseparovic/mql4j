@@ -19,7 +19,7 @@
  */
 
 #pragma once
-#ifdef _DEBUG
+#ifdef _LOG_DEBUG
 	#pragma comment(lib, "comsuppwd.lib")
 #else
 	#pragma comment(lib, "comsuppw.lib")

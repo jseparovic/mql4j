@@ -78,14 +78,15 @@
     </Lib>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="Mql4jCommon.h" />
     <ClInclude Include="Mql4jConfig.h" />
-    <ClInclude Include="Mql4jLog.h" />
+    <ClInclude Include="Mql4jLogger.h" />
     <ClInclude Include="Mql4jString.h" />
     <ClInclude Include="stdafx.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Mql4jConfig.cpp" />
-    <ClCompile Include="Mql4jLog.cpp" />
+    <ClCompile Include="Mql4jLogger.cpp" />
     <ClCompile Include="Mql4jString.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>

@@ -24,6 +24,8 @@
 #include "JavaExecutor.h"
 #include "JavaException.h"
 #include <jni.h>
+#include "..\mql4j-common\Mql4jCommon.h"
+
 
 #define JVM_OPTS_MAX 50
 #define JVM_OPT_LEN_MAX 1024

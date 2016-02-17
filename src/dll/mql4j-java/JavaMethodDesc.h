@@ -21,6 +21,8 @@
 #pragma once
 #include <string>
 #include <algorithm>
+#include "..\mql4j-common\Mql4jCommon.h"
+
 
 using namespace std;
 

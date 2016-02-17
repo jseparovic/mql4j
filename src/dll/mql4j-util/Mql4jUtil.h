@@ -26,10 +26,9 @@
 */
 
 #pragma once
-#ifdef _DEBUG
+#ifdef _LOG_DEBUG
 	#define CRTDBG_MAP_ALLOC
 #endif
-#include "..\mql4j-common\Mql4jLog.h"
 #include "..\mql4j-common\Mql4jString.h"
 #include "..\mql4j-java\Mql4jJava.h"
 

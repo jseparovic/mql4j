@@ -1,6 +1,7 @@
 /* JavaJvm.cpp */
 #include "stdafx.h"
 #include "JavaJvm.h"
+#include "boost/format.hpp"
 
 mql4j::java::JavaJvm * mql4j::java::JavaJvm::_instance = 0;
 
@@ -16,7 +17,7 @@ mql4j::java::JavaJvm::~JavaJvm() {
 mql4j::java::JavaJvm * mql4j::java::JavaJvm::instance() {
 	if(_instance == 0) {
 		_instance = new JavaJvm;
-		log::trace(__FILE__, __LINE__, "Instance created");
+		LOG_INFO << "Instance created";
 		config::printConfig();
 	}
 	return _instance;
@@ -26,7 +27,7 @@ void mql4j::java::JavaJvm::release() {
 	if(_instance != 0) {
 		delete _instance;
 		_instance = 0;
-		log::trace(__FILE__, __LINE__, "Instance released");
+		LOG_INFO << "Instance released";
 	}
 }
 
@@ -38,18 +39,19 @@ JNIEnv * mql4j::java::JavaJvm::getEnv() {
 }
 
 bool mql4j::java::JavaJvm::start() {
-	log::info(__FILE__, __LINE__, "JVM start ...");
+	LOG_INFO << "JVM start ...";
 	if(isRunning()) {
-		log::warn(__FILE__, __LINE__, "Found a running JVM thread. Use attach instead of start");
+		LOG_WARN << "Found a running JVM thread. Use attach instead of start";
 		return false;
 	}
 	options = new JavaVMOption[JVM_OPTS_MAX];
 	addOption("-Djava.class.path=C:\\trading\\jtrader\\libs\\mql4java-all-1.0-SNAPSHOT.jar");
 	addOption("-Dlogback.configurationFile=C:\\trading\\jtrader\\etc\\logback.xml");
-
 //	addOption("-Djava.class.path=" + getClassPath());
 //	addOption("-Dlogback.configurationFile=" + config::getHomeDir() + "\\logback.xml");
 	addOption("-Xmx" + config::getJavaMaxMem());
+	addOption("-Xdebug");
+	addOption("-Xrunjdwp:server=y,transport=dt_socket,address=5005,suspend=n");
 	if(config::isJavaClassloaderVerbose()) {
 		addOption("-verbose:class");
 	}
@@ -64,46 +66,46 @@ bool mql4j::java::JavaJvm::start() {
 	jint createResult = JNI_CreateJavaVM(&jvm, (void**)&env, &vmArgs);
 	delete options;
 	if(createResult != JNI_OK) {
-		log::error(__FILE__, __LINE__, "JVM start failed: " + getErrorStr(createResult));
+		LOG_ERROR << "JVM start failed: " + getErrorStr(createResult);
 		env = NULL;
 		jvm = NULL;
 		return false;
 	}
 	JavaException * startException = JavaException::create(env);
 	if(startException != NULL) {
-		log::warn(__FILE__, __LINE__, "Java exception occurred on startup");
+		LOG_WARN << "Java exception occurred on startup";
 		startException->printMessage();
 		delete startException;
 	}
 	jint verMajor = ((env->GetVersion() >> 16) & 0x0f);
 	jint verMinor = (env->GetVersion() & 0x0f);
-	log::info(__FILE__, __LINE__, "Successfully started Java(TM) SE Runtime Environment " + to_string(
-	              verMajor) + "." + to_string(verMinor));
+	LOG_INFO << "Successfully started Java(TM) SE Runtime Environment " + to_string(
+	              verMajor) + "." + to_string(verMinor);
 	return true;
 }
 
 bool mql4j::java::JavaJvm::stop() {
-	log::info(__FILE__, __LINE__, "JVM stop ...");
+	LOG_INFO << "JVM stop ...";
 	if(!isRunning()) {
-		log::error(__FILE__, __LINE__, "JVM stop failed: Not running");
+		LOG_ERROR << "JVM stop failed: Not running";
 		jvm = NULL;
 		env = NULL;
 		return false;
 	}
 	if(getEnv() == NULL) {
-		log::error(__FILE__, __LINE__, "JVM stop failed: Invalid JVM environment");
+		LOG_ERROR << "JVM stop failed: Invalid JVM environment";
 		jvm = NULL;
 		env = NULL;
 		return false;
 	}
 	jint destroyResult = jvm->DestroyJavaVM();
 	if(destroyResult != JNI_OK) {
-		log::error(__FILE__, __LINE__, "JVM stop failed: " + getErrorStr(destroyResult));
+		LOG_ERROR << "JVM stop failed: " + getErrorStr(destroyResult);
 		jvm = NULL;
 		env = NULL;
 		return false;
 	}
-	log::debug(__FILE__, __LINE__, "Successfully stopped JVM");
+	LOG_DEBUG << "Successfully stopped JVM";
 	jvm = NULL;
 	env = NULL;
 	return true;
@@ -120,41 +122,41 @@ bool mql4j::java::JavaJvm::isRunning() {
 }
 
 bool mql4j::java::JavaJvm::attach() {
-	log::debug(__FILE__, __LINE__, "JVM attach ...");
+	LOG_DEBUG << "JVM attach ...";
 	jsize num = 0;
 	JNI_GetCreatedJavaVMs(NULL, 0, &num);
-	log::trace(__FILE__, __LINE__, "Found " + std::to_string((int)num) + " running JVM thread(s)");
+	LOG_ERROR << boost::format("Found %1% running JVM thread(s)") % num;
 	if(num < 1) {
-		log::warn(__FILE__, __LINE__, "Cannot attach to JVM thread: No JVM thread found");
+		LOG_WARN << "Cannot attach to JVM thread: No JVM thread found";
 		return false;
 	}
 	JavaVM ** jvms = new JavaVM*[num];
 	JNI_GetCreatedJavaVMs(jvms, num, &num);
 	this->jvm = jvms[0];
 	JNIEnv * tmpEnv;
-	log::trace(__FILE__, __LINE__, "Creating temporary JVM environment ...");
+	LOG_TRACE << "Creating temporary JVM environment ...";
 	jint tmpEnvResult = this->jvm->GetEnv((void **)&tmpEnv, JVM_JAVA_VERSION_REQ);
 	if(tmpEnvResult != JNI_EDETACHED && tmpEnvResult != JNI_OK) {
-		log::error(__FILE__, __LINE__, "Failed to get temporary JVM environment: " + getErrorStr(tmpEnvResult));
+		LOG_ERROR << "Failed to get temporary JVM environment: " + getErrorStr(tmpEnvResult);
 		this->env = NULL;
 		this->jvm = NULL;
 		return false;
 	}
-	log::trace(__FILE__, __LINE__, "Try to attach ...");
+	LOG_TRACE << "Try to attach ...";
 	jint attachResult = jvm->AttachCurrentThread((void **)&env, NULL);
 	if(env == NULL) {
-		log::error(__FILE__, __LINE__, "Failed to attach JVM thread: Got invalid JVM environment");
+		LOG_ERROR <<  "Failed to attach JVM thread: Got invalid JVM environment";
 		this->env = NULL;
 		this->jvm = NULL;
 		return false;
 	}
 	if(attachResult != JNI_OK) {
-		log::error(__FILE__, __LINE__, "Failed to attach JVM thread: " + getErrorStr(attachResult));
+		LOG_ERROR <<  "Failed to attach JVM thread: " + getErrorStr(attachResult);
 		this->env = NULL;
 		this->jvm = NULL;
 		return false;
 	}
-	log::debug(__FILE__, __LINE__, "Successfully attached JVM");
+	LOG_DEBUG << "Successfully attached JVM";
 	return true;
 }
 
@@ -167,13 +169,13 @@ string mql4j::java::JavaJvm::getClassPath() {
 	wstring find = mql4j::toWString(homeDir + "/*");
 	hFind = FindFirstFile(find.c_str(), &fd);
 	if(INVALID_HANDLE_VALUE == hFind) {
-		log::warn(__FILE__, __LINE__, "Invalid libraries directory: " + homeDir);
+		LOG_WARN << "Invalid libraries directory: " + homeDir;
 		return cp;
 	}
 	while(FindNextFile(hFind, &fd) != 0) {
 		string fileName = mql4j::toString(fd.cFileName);
 		if(fileName.rfind(".jar") == fileName.length() - 4) {
-			log::debug(__FILE__, __LINE__, "  (jar) " + fileName);
+			LOG_DEBUG << "  (jar) " + fileName;
 			if(cp.length() > 0) {
 				cp += ";";
 			}
@@ -182,7 +184,7 @@ string mql4j::java::JavaJvm::getClassPath() {
 	}
 	FindClose(hFind);
 	if(cp.length() < 2) {
-		log::warn(__FILE__, __LINE__, "No .jar file(s) found in " + homeDir);
+		LOG_WARN << "No .jar file(s) found in " + homeDir;
 	}
 	replace(cp.begin(), cp.end(), '\\', '/');
 	return cp;
@@ -190,10 +192,10 @@ string mql4j::java::JavaJvm::getClassPath() {
 
 void mql4j::java::JavaJvm::addOption(const string option) {
 	if(nOptions >= JVM_OPTS_MAX) {
-		log::warn(__FILE__, __LINE__, "Not added option '" + option + "': Limit exceeded");
+		LOG_WARN << "Not added option '" + option + "': Limit exceeded";
 		return;
 	}
-	log::debug(__FILE__, __LINE__, "  (opt) '" + option + "'");
+	LOG_DEBUG << "  (opt) '" + option + "'";
 	char * opt = new char[option.length() + 1]();
 	memcpy_s(opt, option.length(), option.c_str(), option.length());
 	options[nOptions].optionString = opt;

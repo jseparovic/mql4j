@@ -20,11 +20,12 @@
 
 #pragma once
 #include "JavaJvm.h"
-#include "..\mql4j-common\Mql4jLog.h"
 #include <iostream>
 #include <algorithm>
 #include <sstream>
 #include <jni.h>
+#include "..\mql4j-common\Mql4jCommon.h"
+
 
 using namespace std;
 

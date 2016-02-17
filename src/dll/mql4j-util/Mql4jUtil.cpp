@@ -16,17 +16,6 @@ void printHelp() {
 	exit(1);
 }
 
-bool getDestType(const string t) {
-	if(t.compare("topic") == 0) {
-		return true;
-	} else if(t.compare("queue") == 0) {
-		return false;
-	} else {
-		mql4j::log::error(__FILE__, __LINE__, "Invalid destination type '" + t + "'. Needs to be 'topic' or 'queue'");
-		exit(1);
-	}
-}
-
 string getArg(const int argc, const char * argv[], const int num) {
 	if(num >= argc) {
 		printf_s("To few arguments!\nSee %s help\n", argv[0]);

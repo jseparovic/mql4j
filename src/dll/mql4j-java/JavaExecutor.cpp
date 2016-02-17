@@ -2,88 +2,14 @@
 #include "stdafx.h"
 #include "JavaExecutor.h"
 #include "boost/format.hpp"
-
-bool mql4j::java::JavaExecutor::callMain(JNIEnv * env, string className, jobjectArray args) {
-	if(env == NULL) {
-		log::error(__FILE__, __LINE__, "Invalid JVM environment");
-		return false;
-	}
-	JavaMethodDesc * desc = new JavaMethodDesc(className, "main");
-	desc->addArray(Jid::String);
-	desc->setReturn(Jid::Void);
-	jclass cls = env->FindClass(desc->getClassName().c_str());
-	if(cls == NULL) {
-		log::error(__FILE__, __LINE__, "Java class '" + desc->getClassName() + "' not found");
-		delete desc;
-		return false;
-	}
-	jmethodID mid = env->GetStaticMethodID(cls, desc->getMethodName().c_str(), desc->getSignature().c_str());
-	if(mid == NULL) {
-		log::error(__FILE__, __LINE__, "Java method '" + desc->getMethodName() + " " + desc->getSignature() +
-		           "' not found in java class '" + desc->getClassName() + "'");
-		delete desc;
-		return false;
-	}
-	env->CallStaticVoidMethod(cls, mid, args);
-	if(env->ExceptionCheck()) {
-		JavaException * exception = JavaException::create(env);
-		log::warn(__FILE__, __LINE__, "Java call '" + desc->getClassName() + " " + desc->getMethodName() + " " +
-		          desc->getSignature() + "' throws an excaption:");
-		exception->printMessage();
-		delete exception;
-		delete desc;
-		return false;
-	} else {
-		log::info(__FILE__, __LINE__, "Java call '" + desc->getClassName() + " " + desc->getMethodName() + " " +
-		          desc->getSignature() + "' succeeded");
-		delete desc;
-		return true;
-	}
-}
-
-string mql4j::java::JavaExecutor::call(JNIEnv * env, string className, string methodName, string arg) {
-	if(env == NULL) {
-		log::error(__FILE__, __LINE__, "Invalid JVM environment");
-		return string();
-	}
-	JavaMethodDesc * desc = new JavaMethodDesc(className, methodName);
-	desc->add(Jid::String);
-	desc->setReturn(Jid::String);
-	jclass cls = env->FindClass(desc->getClassName().c_str());
-	if(cls == NULL) {
-		log::error(__FILE__, __LINE__, "Java class '" + desc->getClassName() + "' not found");
-		return string();
-	}
-	jmethodID mid = env->GetStaticMethodID(cls, desc->getMethodName().c_str(), desc->getSignature().c_str());
-	if(mid == NULL) {
-		log::error(__FILE__, __LINE__, "Java method '" + desc->getMethodName() + " " + desc->getSignature() +
-		           "' not found in java class '" + desc->getClassName() + "'");
-		return string();
-	}
-	jstring resultObj = (jstring) env->CallStaticObjectMethod(cls, mid, env->NewStringUTF(arg.c_str()));
-	if(env->ExceptionCheck()) {
-		JavaException * exception = JavaException::create(env);
-		log::warn(__FILE__, __LINE__, "Java call '" + desc->getClassName()  + " " + desc->getMethodName() + " " +
-		          desc->getSignature() + "' throws an excaption:");
-		exception->printMessage();
-		delete exception;
-		return string();
-	}
-	log::info(__FILE__, __LINE__, "Java call '" + desc->getClassName() + " " + desc->getMethodName() + " " +
-	          desc->getSignature() + "' succeeded");
-	const char* resultStr = env->GetStringUTFChars(resultObj, 0);
-	string str = string(resultStr);
-	env->ReleaseStringUTFChars(resultObj, resultStr);
-	env->DeleteLocalRef(resultObj);
-	return str;
-}
+#include "boost/locale.hpp"
 
 
 jclass mql4j::java::JavaExecutor::getJClass(JNIEnv * env, const char* classNameStr) {
 	jclass classHandle = env->FindClass(classNameStr);
 	if (classHandle == NULL)
 	{
-		log::error(__FILE__, __LINE__, str(boost::format("could not find class :  %1%") % classNameStr));
+		LOG_ERROR << boost::format("could not find class :  %1%") % classNameStr;
 		return NULL;
 	}
 	return classHandle;
@@ -94,8 +20,45 @@ jmethodID mql4j::java::JavaExecutor::getJMethodID(JNIEnv * env, jclass classHand
 	jmethodID methodID = env->GetStaticMethodID(classHandle, methodName, signature);
 	if (methodID == NULL)
 	{
-		log::error(__FILE__, __LINE__, str(boost::format("could not find method :  %1% %2%") % methodName % signature));
+		LOG_ERROR << boost::format("could not find method :  %1% %2%") % methodName % signature;
 		return NULL;
 	}
 	return methodID;
+}
+
+jstring mql4j::java::JavaExecutor::toJString(JNIEnv *env, wchar_t *str) {
+	return env->NewStringUTF(toString(str).c_str());
+}
+
+
+bool mql4j::java::JavaExecutor::callBoolMethod(int64_t chartId, const char* className, const char* methodName, const char* signature)
+{
+	LOG_DEBUG << boost::format("calling %1%") % methodName;
+
+	JNIEnv * env = JavaJvm::instance()->getEnv();
+	jclass classHandle = JavaExecutor::getJClass(env, className);
+	if (classHandle == NULL) return true;
+
+	jmethodID methodID = JavaExecutor::getJMethodID(env, classHandle, methodName, signature);
+	if (methodID == NULL) return true;
+
+	bool result = env->CallStaticBooleanMethod(classHandle, methodID, chartId);
+	LOG_DEBUG << boost::format("Call %1% %2%(%3%) returns %4%") % className % methodName % chartId % result;
+	return result;
+}
+
+
+void mql4j::java::JavaExecutor::callVoidMethod(int64_t chartId, const char* className, const char* methodName, const char* signature)
+{
+	LOG_DEBUG << boost::format("calling %1%") % methodName;
+
+	JNIEnv * env = JavaJvm::instance()->getEnv();
+	jclass classHandle = JavaExecutor::getJClass(env, className);
+	if (classHandle == NULL) return;
+
+	jmethodID methodID = JavaExecutor::getJMethodID(env, classHandle, methodName, signature);
+	if (methodID == NULL) return;
+
+	env->CallStaticVoidMethod(classHandle, methodID, chartId);
+	LOG_DEBUG << boost::format("Call %1% %2%(%3%)") % className % methodName % chartId;
 }

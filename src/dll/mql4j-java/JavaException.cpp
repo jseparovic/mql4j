@@ -2,6 +2,7 @@
 #include "stdafx.h"
 #include "JavaException.h"
 
+
 mql4j::java::JavaException::JavaException(JNIEnv * env) {
 	this->env = env;
 	this->message = "";
@@ -73,5 +74,5 @@ string mql4j::java::JavaException::getMessage() {
 }
 
 void mql4j::java::JavaException::printMessage() {
-	log::warn(__FILE__, __LINE__, message);
+	LOG_WARN << message;
 }

@@ -1,6 +1,7 @@
 /* Mql4jConfig.cpp */
 #include "stdafx.h"
 #include "Mql4jConfig.h"
+#include "Mql4jCommon.h"
 
 string mql4j::config::getConfigString(const string key, const string dflt) {
 	LPTSTR str = new TCHAR[MQL4J_CONFIG_LINE_MAX];
@@ -17,7 +18,7 @@ bool mql4j::config::getConfigBool(const string key, const bool dflt) {
 	} else if(str.compare("FALSE") == 0) {
 		return false;
 	} else {
-		log::warn(__FILE__, __LINE__, "Configuration '" + key + "' (" + str + ") is invalid. Set to true or false");
+		LOG_WARN << "Configuration '" + key + "' (" + str + ") is invalid. Set to true or false";
 		return false;
 	}
 }
@@ -35,10 +36,10 @@ void mql4j::config::setConfigBool(const string key, const bool value) {
 }
 
 void mql4j::config::printConfig() {
-	log::info(__FILE__, __LINE__, "homeDir    = " + getHomeDir());
-	log::info(__FILE__, __LINE__, "javaMaxMem = " + getJavaMaxMem());
-	log::info(__FILE__, __LINE__, "logfile    = " + getLogfile());
-	log::info(__FILE__, __LINE__, "logLevel   = " + getLogLevel());
+	LOG_INFO << "homeDir    = " + getHomeDir();
+	LOG_INFO << "javaMaxMem = " + getJavaMaxMem();
+	LOG_INFO << "logfile    = " + getLogfile();
+	LOG_INFO << "logLevel   = " + getLogLevel();
 }
 
 string mql4j::config::getHomeDir() {
